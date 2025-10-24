@@ -1,0 +1,29 @@
+{
+  "name": "pancakeswap-prediction-collector",
+  "version": "1.0.0",
+  "description": "PancakeSwap Prediction V2 data collector for BNB Smart Chain",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "test": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": ["pancakeswap", "prediction", "bsc", "data-collector"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "sql.js": "^1.10.3",
+    "dotenv": "^16.3.1",
+    "viem": "^2.7.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "@types/sql.js": "^1.4.9",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.1.0"
+  }
+}

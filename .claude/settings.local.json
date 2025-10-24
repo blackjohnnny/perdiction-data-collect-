@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install)",
+      "Bash(del \"c:\\Users\\Micha\\fuzzy-cake\\perdiction-data-collect-\\src\\store\\sqlite.test.ts\")",
+      "Bash(npm run build:*)",
+      "Bash(npm start:*)",
+      "Bash(node:*)",
+      "Bash(DB_PATH=./prediction-data-btc.db PREDICTION_CONTRACT=0x48781a7d35f6137a9135Bbb984AF65fd6AB25618 npm start backfill -- --from 1 --to latest)",
+      "Bash(tasklist)",
+      "Bash(findstr:*)",
+      "Bash(taskkill:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
