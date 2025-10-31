@@ -91,25 +91,30 @@ function initSchema(): void {
       reward_amount_wei TEXT NOT NULL,
       winner TEXT NOT NULL CHECK(winner IN ('UP','DOWN','DRAW','UNKNOWN')),
       winner_multiple REAL,
+      t20s_total_wei TEXT,
+      t20s_bull_wei TEXT,
+      t20s_bear_wei TEXT,
+      t20s_implied_up_multiple REAL,
+      t20s_implied_down_multiple REAL,
+      t20s_taken_at INTEGER,
+      t8s_total_wei TEXT,
+      t8s_bull_wei TEXT,
+      t8s_bear_wei TEXT,
+      t8s_implied_up_multiple REAL,
+      t8s_implied_down_multiple REAL,
+      t8s_taken_at INTEGER,
+      t4s_total_wei TEXT,
+      t4s_bull_wei TEXT,
+      t4s_bear_wei TEXT,
+      t4s_implied_up_multiple REAL,
+      t4s_implied_down_multiple REAL,
+      t4s_taken_at INTEGER,
       inserted_at INTEGER NOT NULL,
       updated_at INTEGER NOT NULL
     );
 
-    CREATE TABLE IF NOT EXISTS snapshots (
-      epoch INTEGER NOT NULL,
-      snapshot_type TEXT NOT NULL CHECK(snapshot_type IN ('T_MINUS_20S', 'T_MINUS_8S', 'T_MINUS_4S')),
-      taken_at INTEGER NOT NULL,
-      total_amount_wei TEXT NOT NULL,
-      bull_amount_wei TEXT NOT NULL,
-      bear_amount_wei TEXT NOT NULL,
-      implied_up_multiple REAL,
-      implied_down_multiple REAL,
-      PRIMARY KEY (epoch, snapshot_type)
-    );
-
     CREATE INDEX IF NOT EXISTS idx_rounds_winner ON rounds(winner);
     CREATE INDEX IF NOT EXISTS idx_rounds_lock_ts ON rounds(lock_ts);
-    CREATE INDEX IF NOT EXISTS idx_snapshots_taken_at ON snapshots(taken_at);
   `);
 }
 
@@ -178,28 +183,29 @@ export async function upsertSnapshot(
   const database = await getDb();
   const now = Math.floor(Date.now() / 1000);
 
+  // Map snapshot type to column prefix
+  const prefix = snapshotType === 'T_MINUS_20S' ? 't20s' :
+                 snapshotType === 'T_MINUS_8S' ? 't8s' : 't4s';
+
   database.run(`
-    INSERT INTO snapshots (
-      epoch, snapshot_type, taken_at,
-      total_amount_wei, bull_amount_wei, bear_amount_wei,
-      implied_up_multiple, implied_down_multiple
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    ON CONFLICT(epoch, snapshot_type) DO UPDATE SET
-      taken_at = excluded.taken_at,
-      total_amount_wei = excluded.total_amount_wei,
-      bull_amount_wei = excluded.bull_amount_wei,
-      bear_amount_wei = excluded.bear_amount_wei,
-      implied_up_multiple = excluded.implied_up_multiple,
-      implied_down_multiple = excluded.implied_down_multiple
+    UPDATE rounds SET
+      ${prefix}_total_wei = ?,
+      ${prefix}_bull_wei = ?,
+      ${prefix}_bear_wei = ?,
+      ${prefix}_implied_up_multiple = ?,
+      ${prefix}_implied_down_multiple = ?,
+      ${prefix}_taken_at = ?,
+      updated_at = ?
+    WHERE epoch = ?
   `, [
-    Number(epoch),
-    snapshotType,
-    now,
     totalAmount.toString(),
     bullAmount.toString(),
     bearAmount.toString(),
     impliedUpMultiple,
-    impliedDownMultiple
+    impliedDownMultiple,
+    now,
+    now,
+    Number(epoch)
   ]);
 
   saveDb();
@@ -207,9 +213,12 @@ export async function upsertSnapshot(
 
 export async function hasSnapshot(epoch: bigint, type: 'T_MINUS_20S' | 'T_MINUS_8S' | 'T_MINUS_4S' = 'T_MINUS_8S'): Promise<boolean> {
   const database = await getDb();
+  const prefix = type === 'T_MINUS_20S' ? 't20s' :
+                 type === 'T_MINUS_8S' ? 't8s' : 't4s';
+
   const result = database.exec(`
-    SELECT 1 FROM snapshots WHERE epoch = ? AND snapshot_type = ? LIMIT 1
-  `, [Number(epoch), type]);
+    SELECT 1 FROM rounds WHERE epoch = ? AND ${prefix}_total_wei IS NOT NULL LIMIT 1
+  `, [Number(epoch)]);
 
   return result.length > 0 && result[0].values.length > 0;
 }
