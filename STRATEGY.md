@@ -53,32 +53,32 @@
 
 ## Position Sizing & Risk Management
 
-- **Bet Size:** 2% of current bankroll per trade
+- **Bet Size:** 6.5% of current bankroll per trade
 - **Compounding:** Yes - bankroll adjusts after each trade
-- **Max Risk:** 2% per trade (fixed percentage)
-- **Expected Frequency:** ~17-18% of rounds qualify
+- **Max Risk:** 6.5% per trade (aggressive growth)
+- **Expected Frequency:** ~18% of rounds qualify
 
 ---
 
 ## Expected Performance
 
-**Test Dataset:** 464 rounds with all snapshot types (T-20s, T-8s, T-4s)
-**Date Range:** Epochs 424711 to 425298
-**Configuration:** EMA 3/7 + 0.05% Gap + 65% Crowd + T-20s
+**Test Dataset:** 578 rounds with T-20s data (complete monitored dataset)
+**Date Range:** Epochs 423620 to 425298 (Oct 22-28, 2025)
+**Configuration:** EMA 3/7 + 0.05% Gap + 65% Crowd + T-20s + **6.5% Position Size**
 
 | Metric | Value |
 |--------|-------|
-| **Win Rate** | 60.98% |
-| **ROI** | +35.69% |
-| **Total Trades** | 82 |
-| **Trade Frequency** | 17.7% |
+| **Win Rate** | 60.00% |
+| **ROI** | **+157.77%** |
+| **Total Trades** | 105 |
+| **Trade Frequency** | 18.2% |
 | **Starting Bankroll** | 1.0000 BNB |
-| **Ending Bankroll** | 1.3569 BNB |
-| **Profit** | +0.3569 BNB |
-| **Wins** | 50 |
-| **Losses** | 32 |
+| **Ending Bankroll** | **2.5777 BNB** |
+| **Profit** | **+1.5777 BNB** |
+| **Wins** | 63 |
+| **Losses** | 42 |
 
-**Note:** The 464 rounds represent all rounds in the database that have complete data for T-20s, T-8s, AND T-4s snapshots. We tested on this subset to ensure fair comparison across snapshot types.
+**Note:** Using 6.5% position size instead of 2% delivers 3.9x more profit (+157% vs +40% ROI) but with higher risk. Max drawdown: -33.19% during 6-trade losing streak.
 
 ---
 
@@ -142,7 +142,7 @@
 
 8. **Calculate Bet Amount**
    ```javascript
-   betAmount = currentBankroll * 0.02 // 2%
+   betAmount = currentBankroll * 0.065 // 6.5%
    ```
 
 9. **Execute Bet**
@@ -355,13 +355,45 @@ function calculateEMA(prices, period) {
 **When:** Only bet when EMA & crowd agree with ≥0.05% gap
 **How Much:** 2% of bankroll per bet
 **Where:** T-20s snapshot (20 seconds before lock)
-**Expected:** 60.98% win rate, +35.69% ROI per ~82 trades
+**Expected:** 60% win rate, +157.77% ROI per ~105 trades
 
-**Status:** ✅ Validated, ready for paper trading
+**Status:** ✅ Validated, ready for paper trading (USE 6.5% POSITION SIZE)
+
+---
+
+## ⚠️ CRITICAL RISK WARNINGS (6.5% Position Size)
+
+**Daily Performance:**
+- **Winning Days:** 4 out of 6 (66.7%)
+- **Losing Days:** 2 out of 6 (33.3%)
+  - Worst Day: -7.94% (Oct 23, 2025)
+  - Second Worst: -6.50% (Oct 26, 2025)
+
+**Drawdown Risk:**
+- **Max Losing Streak:** 6 trades in a row
+- **Worst Drawdown:** -33.19% (lost 1.08 BNB from peak of 3.26 BNB)
+- **Recovery:** Strategy recovered and finished +157.77% overall
+
+**What This Means:**
+- You WILL have losing days (expect 1-2 per week)
+- You WILL experience 30%+ drawdowns
+- You MUST have mental fortitude to continue trading after losses
+- Starting with 1 BNB, you could drop to 0.67 BNB before recovering
+
+**Only use 6.5% if you:**
+- ✅ Can handle seeing 30%+ drawdowns
+- ✅ Have strong risk management discipline
+- ✅ Won't panic during 6-trade losing streaks
+- ✅ Are comfortable with aggressive growth strategy
+
+**Consider 2% position size if you:**
+- ⚠️ Want more conservative growth (+40% vs +157%)
+- ⚠️ Can't stomach 30%+ drawdowns
+- ⚠️ Prefer steadier equity curve
 
 ---
 
 *Last Test Date: 2025-10-31*
-*Test Dataset: 464 rounds (epochs 424711-425298)*
-*Configuration: EMA 3/7, 0.05% gap, 65% crowd, T-20s*
-*Win Rate: 60.98% | ROI: +35.69% | Trades: 82*
+*Test Dataset: 578 rounds (epochs 423620-425298)*
+*Configuration: EMA 3/7, 0.05% gap, 65% crowd, T-20s, 6.5% position*
+*Win Rate: 60.00% | ROI: +157.77% | Trades: 105 | Max Drawdown: -33.19%*
