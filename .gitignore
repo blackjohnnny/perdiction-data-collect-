@@ -7,13 +7,17 @@ dist/
 # Environment
 .env
 
-# Database
+# Database (ignore all data files)
 *.db
 *.db-shm
 *.db-wal
+data/*.db
+data/*.db-*
 
-# CSV exports
+# CSV exports (ignore all data files)
 *.csv
+data/*.csv
+data/*.json
 
 # Logs
 *.log

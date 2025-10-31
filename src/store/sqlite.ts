@@ -25,7 +25,7 @@ export type RoundRow = {
 
 export type SnapshotRow = {
   epoch: number;
-  snapshot_type: 'T_MINUS_25S' | 'T_MINUS_8S' | 'T_MINUS_4S';
+  snapshot_type: 'T_MINUS_20S' | 'T_MINUS_8S' | 'T_MINUS_4S';
   taken_at: number;
   total_amount_wei: string;
   bull_amount_wei: string;
@@ -97,7 +97,7 @@ function initSchema(): void {
 
     CREATE TABLE IF NOT EXISTS snapshots (
       epoch INTEGER NOT NULL,
-      snapshot_type TEXT NOT NULL CHECK(snapshot_type IN ('T_MINUS_25S', 'T_MINUS_8S', 'T_MINUS_4S')),
+      snapshot_type TEXT NOT NULL CHECK(snapshot_type IN ('T_MINUS_20S', 'T_MINUS_8S', 'T_MINUS_4S')),
       taken_at INTEGER NOT NULL,
       total_amount_wei TEXT NOT NULL,
       bull_amount_wei TEXT NOT NULL,
@@ -173,7 +173,7 @@ export async function upsertSnapshot(
   bearAmount: bigint,
   impliedUpMultiple: number | null,
   impliedDownMultiple: number | null,
-  snapshotType: 'T_MINUS_25S' | 'T_MINUS_8S' | 'T_MINUS_4S' = 'T_MINUS_8S'
+  snapshotType: 'T_MINUS_20S' | 'T_MINUS_8S' | 'T_MINUS_4S' = 'T_MINUS_8S'
 ): Promise<void> {
   const database = await getDb();
   const now = Math.floor(Date.now() / 1000);
@@ -205,7 +205,7 @@ export async function upsertSnapshot(
   saveDb();
 }
 
-export async function hasSnapshot(epoch: bigint, type: 'T_MINUS_25S' | 'T_MINUS_8S' | 'T_MINUS_4S' = 'T_MINUS_8S'): Promise<boolean> {
+export async function hasSnapshot(epoch: bigint, type: 'T_MINUS_20S' | 'T_MINUS_8S' | 'T_MINUS_4S' = 'T_MINUS_8S'): Promise<boolean> {
   const database = await getDb();
   const result = database.exec(`
     SELECT 1 FROM snapshots WHERE epoch = ? AND snapshot_type = ? LIMIT 1

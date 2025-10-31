@@ -46,7 +46,7 @@ Environment variables (`.env`):
 ```bash
 BSC_RPC=https://bsc-dataseed.binance.org  # BSC RPC endpoint
 POLL_INTERVAL_MS=3000                      # Live mode polling interval
-DB_PATH=./prediction-data.db               # SQLite database path
+DB_PATH=./data/prediction-data.db          # SQLite database path
 CONCURRENCY=6                              # Backfill concurrency
 MAX_RETRIES=5                              # Max RPC retry attempts
 RETRY_BASE_DELAY_MS=200                    # Retry backoff base delay
@@ -135,9 +135,21 @@ src/
 │   └── live.ts                # Live watcher with T-20s snapshots
 ├── export/
 │   └── csv.ts                 # CSV export utilities
+├── analysis/                  # Built-in analysis modules
 ├── config.ts                  # Environment configuration
 ├── contract.ts                # Viem client + typed helpers
 └── index.ts                   # CLI entry point
+
+data/                          # All databases and CSV exports
+├── live-monitor.db            # Main live monitoring database
+├── prediction-data-btc.db     # Historical BTC prediction data
+└── *.csv                      # Various CSV exports
+
+analysis-scripts/              # Testing and analysis scripts
+├── test-t20-strategy-final.mjs   # Optimized strategy test
+├── paper-trade-*.mjs             # Paper trading simulations
+├── analyze-*.mjs                 # Various analysis tools
+└── README.md                     # Scripts documentation
 ```
 
 ## Contract Details

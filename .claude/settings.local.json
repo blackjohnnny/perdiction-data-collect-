@@ -11,7 +11,14 @@
       "Bash(findstr:*)",
       "Bash(taskkill:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(dir:*)",
+      "Bash(start excel \"c:\\Users\\Micha\\fuzzy-cake\\perdiction-data-collect-\\paper-trade-results.csv\")",
+      "Bash(find:*)",
+      "Bash(DB_PATH=./data/live-monitor.db npm start backfill -- --from 425681 --to 425761)",
+      "Bash(DB_PATH=./data/live-monitor.db npm start backfill -- --from 425621 --to 425778)",
+      "Bash(DB_PATH=./data/live-monitor.db npm start backfill -- --from 425621 --to 425680)",
+      "Bash(DB_PATH=./data/live-monitor.db npm start backfill -- --from 425681 --to 425779)"
     ],
     "deny": [],
     "ask": []

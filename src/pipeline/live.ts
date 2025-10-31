@@ -21,7 +21,7 @@ export async function runLiveWatcher(options: LiveWatcherOptions = {}): Promise<
   console.log(`Initial epoch: ${lastSeenEpoch}`);
 
   // Track which epochs we've attempted snapshots for (separate for each type)
-  const snapshot25sAttempted = new Set<string>();
+  const snapshot20sAttempted = new Set<string>();
   const snapshot8sAttempted = new Set<string>();
   const snapshot4sAttempted = new Set<string>();
 
@@ -58,14 +58,14 @@ export async function runLiveWatcher(options: LiveWatcherOptions = {}): Promise<
 
         const epochKey = nowEpoch.toString();
 
-        // Capture T-25s snapshot (25 seconds before lock)
+        // Capture T-20s snapshot (20 seconds before lock)
         if (
-          timeUntilLock <= 25 &&
-          timeUntilLock > 20 &&
-          !snapshot25sAttempted.has(epochKey) &&
-          !(await hasSnapshot(nowEpoch, 'T_MINUS_25S'))
+          timeUntilLock <= 20 &&
+          timeUntilLock > 15 &&
+          !snapshot20sAttempted.has(epochKey) &&
+          !(await hasSnapshot(nowEpoch, 'T_MINUS_20S'))
         ) {
-          console.log(`Capturing T-25s snapshot for epoch ${nowEpoch} (${timeUntilLock}s until lock)`);
+          console.log(`Capturing T-20s snapshot for epoch ${nowEpoch} (${timeUntilLock}s until lock)`);
 
           const { impliedUp, impliedDown } = calculateImpliedMultiples(
             currentRound.totalAmount,
@@ -80,12 +80,12 @@ export async function runLiveWatcher(options: LiveWatcherOptions = {}): Promise<
             currentRound.bearAmount,
             impliedUp,
             impliedDown,
-            'T_MINUS_25S'
+            'T_MINUS_20S'
           );
 
-          snapshot25sAttempted.add(epochKey);
+          snapshot20sAttempted.add(epochKey);
           console.log(
-            `T-25s snapshot saved for epoch ${nowEpoch}: ` +
+            `T-20s snapshot saved for epoch ${nowEpoch}: ` +
               `impliedUp=${impliedUp?.toFixed(3)}, impliedDown=${impliedDown?.toFixed(3)}`
           );
 
@@ -167,12 +167,12 @@ export async function runLiveWatcher(options: LiveWatcherOptions = {}): Promise<
         }
 
         // Clean up old snapshot attempts (keep last 100)
-        if (snapshot25sAttempted.size > 100) {
-          const sorted = Array.from(snapshot25sAttempted)
+        if (snapshot20sAttempted.size > 100) {
+          const sorted = Array.from(snapshot20sAttempted)
             .map((s) => BigInt(s))
             .sort((a, b) => Number(a - b));
           const toRemove = sorted.slice(0, sorted.length - 100);
-          toRemove.forEach((epoch) => snapshot25sAttempted.delete(epoch.toString()));
+          toRemove.forEach((epoch) => snapshot20sAttempted.delete(epoch.toString()));
         }
         if (snapshot8sAttempted.size > 100) {
           const sorted = Array.from(snapshot8sAttempted)
