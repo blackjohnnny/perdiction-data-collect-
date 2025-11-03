@@ -187,26 +187,55 @@ export async function upsertSnapshot(
   const prefix = snapshotType === 'T_MINUS_20S' ? 't20s' :
                  snapshotType === 'T_MINUS_8S' ? 't8s' : 't4s';
 
-  database.run(`
-    UPDATE rounds SET
-      ${prefix}_total_wei = ?,
-      ${prefix}_bull_wei = ?,
-      ${prefix}_bear_wei = ?,
-      ${prefix}_implied_up_multiple = ?,
-      ${prefix}_implied_down_multiple = ?,
-      ${prefix}_taken_at = ?,
-      updated_at = ?
-    WHERE epoch = ?
-  `, [
-    totalAmount.toString(),
-    bullAmount.toString(),
-    bearAmount.toString(),
-    impliedUpMultiple,
-    impliedDownMultiple,
-    now,
-    now,
-    Number(epoch)
-  ]);
+  // Check if round exists
+  const exists = database.exec(`SELECT 1 FROM rounds WHERE epoch = ? LIMIT 1`, [Number(epoch)]);
+
+  if (!exists || exists.length === 0 || exists[0].values.length === 0) {
+    // Round doesn't exist yet - create placeholder with snapshot data
+    database.run(`
+      INSERT OR IGNORE INTO rounds (
+        epoch, start_ts, lock_ts, close_ts, lock_price, close_price,
+        total_amount_wei, bull_amount_wei, bear_amount_wei,
+        oracle_called, reward_base_cal_wei, reward_amount_wei,
+        winner, winner_multiple,
+        ${prefix}_total_wei, ${prefix}_bull_wei, ${prefix}_bear_wei,
+        ${prefix}_implied_up_multiple, ${prefix}_implied_down_multiple, ${prefix}_taken_at,
+        inserted_at, updated_at
+      ) VALUES (?, 0, 0, 0, '0', '0', '0', '0', '0', 0, '0', '0', 'UNKNOWN', NULL, ?, ?, ?, ?, ?, ?, ?, ?)
+    `, [
+      Number(epoch),
+      totalAmount.toString(),
+      bullAmount.toString(),
+      bearAmount.toString(),
+      impliedUpMultiple,
+      impliedDownMultiple,
+      now,
+      now,
+      now
+    ]);
+  } else {
+    // Round exists - update snapshot data
+    database.run(`
+      UPDATE rounds SET
+        ${prefix}_total_wei = ?,
+        ${prefix}_bull_wei = ?,
+        ${prefix}_bear_wei = ?,
+        ${prefix}_implied_up_multiple = ?,
+        ${prefix}_implied_down_multiple = ?,
+        ${prefix}_taken_at = ?,
+        updated_at = ?
+      WHERE epoch = ?
+    `, [
+      totalAmount.toString(),
+      bullAmount.toString(),
+      bearAmount.toString(),
+      impliedUpMultiple,
+      impliedDownMultiple,
+      now,
+      now,
+      Number(epoch)
+    ]);
+  }
 
   saveDb();
 }

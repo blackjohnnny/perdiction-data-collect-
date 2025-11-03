@@ -18,7 +18,13 @@
       "Bash(DB_PATH=./data/live-monitor.db npm start backfill -- --from 425681 --to 425761)",
       "Bash(DB_PATH=./data/live-monitor.db npm start backfill -- --from 425621 --to 425778)",
       "Bash(DB_PATH=./data/live-monitor.db npm start backfill -- --from 425621 --to 425680)",
-      "Bash(DB_PATH=./data/live-monitor.db npm start backfill -- --from 425681 --to 425779)"
+      "Bash(DB_PATH=./data/live-monitor.db npm start backfill -- --from 425681 --to 425779)",
+      "Bash(if [ -f .env ])",
+      "Bash(then cat .env)",
+      "Bash(else echo \"No .env file\")",
+      "Bash(fi)",
+      "Bash(DB_PATH=./data/live-monitor.db npm start live)",
+      "Bash(git log:*)"
     ],
     "deny": [],
     "ask": []

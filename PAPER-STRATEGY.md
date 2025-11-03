@@ -37,11 +37,27 @@ If they disagree, skip the round.
 
 ## Position Sizing
 
-**Bet Amount:** 6.5% of current bankroll per trade
+### Dynamic Position Sizing (CONSERVATIVE Strategy)
 
+**Base Position:** 6.5% of current bankroll
+
+**Adjustments Based on Win/Loss Patterns:**
+
+- **After 1 Loss:** Increase to 9.75% (1.5x) for ONE trade only
+  - Exploits 71.79% win rate observed after losses (vs 59.46% baseline)
+  - Returns to normal after next trade regardless of outcome
+
+- **After 2+ Consecutive Wins:** Reduce to 4.875% (0.75x)
+  - Win rate drops to 50-54% after win streaks
+  - Protects accumulated profits during mean reversion
+
+- **Normal Conditions:** 6.5% position size
+
+**Rationale:**
+- Statistical analysis shows mean reversion: win rate increases significantly after losses
+- ONE-TIME approach avoids Martingale risk (no compounding during losing streaks)
+- Reduces exposure when win probability decreases (after multiple wins)
 - Uses compound growth (bankroll adjusts after each trade)
-- Aggressive sizing for higher returns but larger drawdowns
-- Alternative: 2% for conservative approach
 
 ## Execution
 
@@ -64,17 +80,39 @@ If they disagree, skip the round.
 
 Based on 820 rounds of historical data (Oct 22-31, 2025):
 
-| Metric | Value |
-|--------|-------|
-| **Win Rate** | 59.46% |
-| **Trade Frequency** | 18.0% |
-| **ROI** | +436.84% |
-| **Total Trades** | 148 out of 820 rounds |
+### Strategy Comparison
 
-**Risk Metrics:**
-- Maximum drawdown: ~30-35% (estimated based on 6.5% position size)
-- Losing streaks: 6+ trades observed
-- Losing days: ~33% of trading days
+| Strategy | ROI | Win Rate | Max Drawdown |
+|----------|-----|----------|--------------|
+| **Fixed 6.5%** | +529.16% | 59.46% | ~-40% |
+| **CONSERVATIVE (Dynamic)** | +781.46% | 59.46% | -48.60% |
+| **CONSERVATIVE + 50% Split** | +170.75% | 59.46% | -23.45% |
+
+**Trade Statistics (All Strategies):**
+- Total Trades: 148 out of 820 rounds (18.0% trade frequency)
+- Wins: 88 (59.46%)
+- Losses: 60 (40.54%)
+
+### CONSERVATIVE Strategy (Recommended)
+
+**Performance with 10 BNB starting capital:**
+- Final Balance: 88.15 BNB
+- Profit: +78.15 BNB
+- ROI: +781.46%
+- Max Drawdown: -48.60%
+
+**Risk Profile:**
+- Medium risk with manageable drawdowns
+- 48% better returns than fixed sizing (+781% vs +529%)
+- Exploits mean reversion pattern (71.79% win rate after losses)
+
+### Conservative Alternative (Lower Risk)
+
+For more capital preservation, use 50% profit split:
+- Take 50% of each winning trade to "safe" balance
+- Compound other 50%
+- With 10 BNB: 27.08 BNB total (23.48 BNB secured, 3.59 BNB at risk)
+- ROI: +170.75%, Max Drawdown: -23.45%
 
 ## Why This Works
 
@@ -95,17 +133,66 @@ By requiring both signals AND a minimum gap, we filter out:
 
 Only trading 18% of rounds means we focus on high-conviction setups.
 
+### 4. Mean Reversion Pattern
+
+Statistical analysis reveals a strong edge after losses:
+- **After 1 loss:** Win rate jumps to 71.79% (vs 59.46% baseline)
+- **After 2+ wins:** Win rate drops to 50-54% (below baseline)
+- **After 3+ consecutive results:** Win rate significantly decreases
+
+The CONSERVATIVE strategy exploits this by:
+- Increasing position size when win probability is highest (after losses)
+- Decreasing position size when win probability drops (after win streaks)
+- Using ONE-TIME adjustments to avoid Martingale compounding risk
+
 ## Risk Warnings
 
 ⚠️ **This is paper trading only - not financial advice**
 
-- Strategy is based on historical data that may not repeat
-- 6.5% position size creates significant drawdown risk
-- Past performance does not guarantee future results
-- Blockchain betting involves smart contract risks
-- Market conditions can change rapidly
+### Known Risks
 
-## Configuration
+1. **Small Sample Size:** Only 820 rounds (9 days) of data - patterns may not hold long-term
+2. **Overfitting Risk:** Strategy optimized on limited historical data
+3. **Drawdown Risk:** -48.60% max drawdown observed (CONSERVATIVE strategy)
+4. **Market Changes:** Pool behavior and EMA patterns can shift
+5. **Smart Contract Risk:** Blockchain betting involves technical risks
+6. **Losing Streaks:** 6+ consecutive losses have occurred
+
+### Risk Management Options
+
+**High Return / Medium Risk:**
+- Use CONSERVATIVE strategy (dynamic sizing)
+- Accept -48.60% max drawdown
+- Target +781% ROI
+
+**Lower Return / Lower Risk:**
+- Use 50% profit split approach
+- Secure half of all profits immediately
+- Max drawdown reduces to -23.45%
+- Target +170% ROI with capital preservation
+
+**Important:** Past performance does not guarantee future results. Always paper trade first before risking real capital.
+
+## Implementation
+
+### Testing Strategies
+
+Use `test-fixed-one-time.mjs` to test dynamic position sizing strategies:
+
+```javascript
+// CONSERVATIVE Strategy (Recommended)
+{
+  name: 'CONSERVATIVE: 1.5x After Loss + 0.75x After 2 Wins',
+  getPositionSize: (balance, justLost, currentWinStreak) => {
+    const BASE = 0.065; // 6.5%
+    if (justLost) return BASE * 1.5;        // 9.75% after loss
+    if (currentWinStreak >= 2) return BASE * 0.75; // 4.875% after 2+ wins
+    return BASE; // 6.5% normal
+  }
+}
+```
+
+### Configuration
 
 To test different scenarios, edit `test-strategy.mjs`:
 
@@ -125,7 +212,7 @@ const CONFIG = {
     emaSlow: 7,
     emaGap: 0.0005,          // 0.05%
     crowdThreshold: 0.65,     // 65%
-    positionSize: 0.065       // 6.5%
+    positionSize: 0.065       // 6.5% (base for dynamic sizing)
   }
 };
 ```

@@ -60,8 +60,8 @@ export async function runLiveWatcher(options: LiveWatcherOptions = {}): Promise<
 
         // Capture T-20s snapshot (20 seconds before lock)
         if (
-          timeUntilLock <= 20 &&
-          timeUntilLock > 15 &&
+          timeUntilLock <= 22 &&
+          timeUntilLock > 17 &&
           !snapshot20sAttempted.has(epochKey) &&
           !(await hasSnapshot(nowEpoch, 'T_MINUS_20S'))
         ) {
@@ -96,8 +96,8 @@ export async function runLiveWatcher(options: LiveWatcherOptions = {}): Promise<
 
         // Capture T-8s snapshot (8 seconds before lock)
         if (
-          timeUntilLock <= 8 &&
-          timeUntilLock > 4 &&
+          timeUntilLock <= 10 &&
+          timeUntilLock > 6 &&
           !snapshot8sAttempted.has(epochKey) &&
           !(await hasSnapshot(nowEpoch, 'T_MINUS_8S'))
         ) {
@@ -132,8 +132,8 @@ export async function runLiveWatcher(options: LiveWatcherOptions = {}): Promise<
 
         // Capture T-4s snapshot (4 seconds before lock)
         if (
-          timeUntilLock <= 4 &&
-          timeUntilLock > 0 &&
+          timeUntilLock <= 6 &&
+          timeUntilLock > 2 &&
           !snapshot4sAttempted.has(epochKey) &&
           !(await hasSnapshot(nowEpoch, 'T_MINUS_4S'))
         ) {
