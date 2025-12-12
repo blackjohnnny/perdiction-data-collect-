@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node:*)",
+      "Bash(npm run start:*)",
+      "Bash(timeout 10 node:*)",
+      "Bash(sqlite3:*)",
+      "Bash(npm start)",
+      "Bash(timeout:*)",
+      "Bash(tasklist)",
+      "Bash(findstr:*)",
+      "Bash(tasklist:*)",
+      "Bash(powershell:*)",
+      "Bash(dir:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

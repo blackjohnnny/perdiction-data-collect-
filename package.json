@@ -1,0 +1,23 @@
+{
+  "name": "pancakeswap-prediction-monitor",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Monitor PancakeSwap BNB prediction pools and collect data for strategy backtesting",
+  "main": "monitor.js",
+  "scripts": {
+    "start": "node monitor.js",
+    "backfill": "node backfill.js",
+    "stats": "node db-stats.js",
+    "test": "node test-connection.js",
+    "backtest": "node backtest.js",
+    "optimize": "node optimize.js"
+  },
+  "keywords": ["pancakeswap", "prediction", "bnb", "trading", "blockchain"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "ethers": "^6.13.0",
+    "better-sqlite3": "^11.5.0",
+    "node-fetch": "^3.3.2"
+  }
+}
